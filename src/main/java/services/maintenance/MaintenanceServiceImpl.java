@@ -28,7 +28,7 @@ import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.services.ServiceContext;
 import services.maintenance.common.Maintenance;
 import services.maintenance.common.MaintenanceService;
-
+import services.vehicles.common.VehicleService;
 
 /**
  * An implementation of {@link MaintenanceService} that will be deployed in the cluster.
@@ -79,6 +79,15 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     public Date scheduleVehicleMaintenance(int vehicleId) {
         Date date = new Date();
 
+        // Getting access to VehicleService proxy. The proxy allows to call remotely deployed services.
+        VehicleService vehicleService = ignite.services().serviceProxy(VehicleService.SERVICE_NAME,
+            VehicleService.class, false);
+
+        // Calling remote service to double check vehicle's existence.
+        if (vehicleService.getVehicle(vehicleId) == null)
+            throw new RuntimeException("Vehicle with provided ID doesn't exist:" + vehicleId);
+
+        // Remembering scheduled appointment.
         maintCache.put(sequence.getAndIncrement(), new Maintenance(vehicleId, date));
 
         return date;

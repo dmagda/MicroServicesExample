@@ -26,6 +26,9 @@ import org.apache.ignite.services.Service;
  * {@link IgniteServices#serviceProxy(String, Class, boolean)}.
  */
 public interface VehicleService extends Service {
+    /** Service name */
+    public static final String SERVICE_NAME = "VehicleService";
+
     /**
      * Calls the service to add a new vehicle.
      *

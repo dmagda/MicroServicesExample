@@ -29,6 +29,9 @@ import org.apache.ignite.services.Service;
  */
 public interface MaintenanceService extends Service
 {
+    /** Service name */
+    public static final String SERVICE_NAME = "MaintenanceService";
+
     /**
      * Schedules vehicle maintenance to the nearest available date.
      *

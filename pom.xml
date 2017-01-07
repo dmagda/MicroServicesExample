@@ -14,6 +14,12 @@
             <artifactId>ignite-core</artifactId>
             <version>1.8.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.ignite</groupId>
+            <artifactId>ignite-spring</artifactId>
+            <version>1.8.0</version>
+        </dependency>
     </dependencies>
 
 </project>
