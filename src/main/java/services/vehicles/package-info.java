@@ -16,6 +16,7 @@
  */
 
 /**
- * Created by dmagda on 1/3/17.
+ * The package contains classes that have to be added to the classpath of the nodes where Vehicle service might
+ * be deployed or which can access the service by means of the service proxy.
  */
 package services.vehicles;

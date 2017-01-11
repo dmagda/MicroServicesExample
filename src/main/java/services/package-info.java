@@ -16,6 +16,6 @@
  */
 
 /**
- * Created by dmagda on 1/3/17.
+ * Vehicle service source files.
  */
 package services;

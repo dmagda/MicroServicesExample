@@ -16,6 +16,6 @@
  */
 
 /**
- * Created by dmagda on 1/3/17.
+ * Maintenance service source files.
  */
 package services.maintenance;
