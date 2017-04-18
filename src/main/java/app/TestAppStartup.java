@@ -1,3 +1,19 @@
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package app;
 
 import java.util.Calendar;
@@ -19,6 +35,9 @@ public class TestAppStartup {
     private static final String[] VEHICLES_NAMES = new String [] {
         "TOYOTA", "BMW", "MERCEDES", "HYUNDAI", "FORD"};
 
+    /** Total number of vehicles. */
+    public static int TOTAL_VEHICLES_NUMBER = 10;
+
     /**
      * Start up a testing application that connects to the cluster using an Ignite client node.
      *
@@ -28,7 +47,7 @@ public class TestAppStartup {
      * @throws IgniteException If failed.
      */
     public static void main(String[] args) throws IgniteException {
-        Ignite ignite = Ignition.start("config/data-node-config.xml");
+        Ignite ignite = Ignition.start("config/client-node-config.xml");
 
         System.out.println("Client node has connected to the cluster");
 
@@ -41,10 +60,8 @@ public class TestAppStartup {
 
         Calendar calendar = Calendar.getInstance();
 
-        int maxVehicles = 10;
-
         // Filling it vehicles cache with dummy data.
-        for (int i = 0; i < maxVehicles; i++) {
+        for (int i = 0; i < TOTAL_VEHICLES_NUMBER; i++) {
 
             calendar.set(Calendar.MONTH, rand.nextInt(12));
             calendar.set(Calendar.YEAR, 2000 + rand.nextInt(17));
@@ -64,12 +81,12 @@ public class TestAppStartup {
             VehicleService.class, false);
 
         System.out.println("Getting info for a random vehicle using VehiclesService: " + vehicleService.getVehicle(
-            rand.nextInt(maxVehicles)));
+            rand.nextInt(TOTAL_VEHICLES_NUMBER)));
 
         MaintenanceService maintenanceService = ignite.services().serviceProxy(MaintenanceService.SERVICE_NAME,
             MaintenanceService.class, false);
 
-        int vehicleId = rand.nextInt(maxVehicles);
+        int vehicleId = rand.nextInt(TOTAL_VEHICLES_NUMBER);
 
         Date date = maintenanceService.scheduleVehicleMaintenance(vehicleId);
 

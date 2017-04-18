@@ -16,6 +16,12 @@
  */
 package services.maintenance;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,10 +46,13 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     private Ignite ignite;
 
     /** Reference to the cache. */
-    private IgniteCache<Long, Maintenance> maintCache;
+    private IgniteCache<Integer, Maintenance> maintCache;
 
     /** Maintenance IDs generator */
     private IgniteAtomicSequence sequence;
+
+    /** Processor that accepts requests from external apps that don't use Apache Ignite API. */
+    private ExternalCallsProcessor externalCallsProcessor;
 
     /** {@inheritDoc} */
     public void init(ServiceContext ctx) throws Exception {
@@ -55,24 +64,28 @@ public class MaintenanceServiceImpl implements MaintenanceService {
          */
         maintCache = ignite.cache("maintenance");
 
-        /**
-         * Instantiating the sequence that will be used for IDs generation.
-         */
-        sequence = ignite.atomicSequence("MaintenanceIds", 1, true);
+        /** Processor that accepts requests from external apps that don't use Apache Ignite API. */
+        externalCallsProcessor = new ExternalCallsProcessor();
+
+        externalCallsProcessor.start();
     }
 
     /** {@inheritDoc} */
     public void execute(ServiceContext ctx) throws Exception {
         System.out.println("Executing Maintenance Service on node:" + ignite.cluster().localNode());
 
-        // Some custom logic.
+        /**
+         * Getting the sequence that will be used for IDs generation.
+         */
+        sequence = ignite.atomicSequence("MaintenanceIds", 1, true);
     }
 
     /** {@inheritDoc} */
     public void cancel(ServiceContext ctx) {
         System.out.println("Stopping Maintenance Service on node:" + ignite.cluster().localNode());
 
-        // Some custom logic.
+        // Stopping external requests processor.
+        externalCallsProcessor.interrupt();
     }
 
     /** {@inheritDoc} */
@@ -88,7 +101,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             throw new RuntimeException("Vehicle with provided ID doesn't exist:" + vehicleId);
 
         // Remembering scheduled appointment.
-        maintCache.put(sequence.getAndIncrement(), new Maintenance(vehicleId, date));
+        maintCache.put((int)sequence.getAndIncrement(), new Maintenance(vehicleId, date));
 
         return date;
     }
@@ -106,5 +119,55 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             res2.add(entry.getValue());
 
         return res2;
+    }
+
+    /**
+     * Thread that accepts request from external applications that don't use Apache Ignite service grid API.
+     */
+    private class ExternalCallsProcessor extends Thread {
+        /** Server socket to accept external connections. */
+        private ServerSocket externalConnect;
+
+        /** {@inheritDoc} */
+        @Override public void run() {
+            try {
+                externalConnect = new ServerSocket(50000);
+
+                while (!isInterrupted()) {
+                    Socket socket = externalConnect.accept();
+
+                    DataInputStream dis = new DataInputStream(socket.getInputStream());
+
+                    // Getting vehicleId.
+                    int vehicleId = dis.readInt();
+
+                    List<Maintenance> result = getMaintenanceRecords(vehicleId);
+
+                    ObjectOutputStream dos = new ObjectOutputStream(socket.getOutputStream());
+
+                    // Writing the result into the socket.
+                    dos.writeObject(result);
+
+                    dis.close();
+                    dos.close();
+                    socket.close();
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /** {@inheritDoc} */
+        @Override public void interrupt() {
+            super.interrupt();
+
+            try {
+                externalConnect.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

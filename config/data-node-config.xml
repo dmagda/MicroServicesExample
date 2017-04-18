@@ -30,7 +30,7 @@
 
     <bean class="org.apache.ignite.configuration.IgniteConfiguration">
         <!-- Enabling the peer-class loading feature. -->
-        <property name="setPeerClassLoadingEnabled" value="true"/>
+        <property name="peerClassLoadingEnabled" value="true"/>
 
         <!--
           Labeling Data Nodes with special attribute. This attribute is checked by common.filters.DataNodeFilters
@@ -72,6 +72,57 @@
                     -->
                     <property name="nodeFilter">
                         <bean class="common.filters.DataNodeFilter"/>
+                    </property>
+
+                    <!-- Enabling our sample cache store for the Maintenance cache -->
+                    <property name="cacheStoreFactory">
+                        <bean class="javax.cache.configuration.FactoryBuilder" factory-method="factoryOf">
+                            <constructor-arg value="common.cachestore.SimpleCacheStore"/>
+                        </bean>
+                    </property>
+
+                    <!--
+                        Avoid Maintenance objects deserialization on data nodes side when they are passed to
+                        SampleCacheStore.
+                    -->
+                    <property name="storeKeepBinary" value="true"/>
+
+                    <!-- Enabling the write-through feature for the store. -->
+                    <property name="writeThrough" value="true"/>
+
+                    <!-- Enabling the read-through feature for the store. -->
+                    <property name="readThrough" value="true"/>
+
+                    <!-- Configuring SQL schema. -->
+                    <property name="queryEntities">
+                        <list>
+                            <bean class="org.apache.ignite.cache.QueryEntity">
+                                <!-- Setting indexed type's key class -->
+                                <property name="keyType" value="java.lang.Integer"/>
+
+                                <!-- Setting indexed type's value class -->
+                                <property name="valueType"
+                                          value="services.maintenance.common.Maintenance"/>
+
+                                <!-- Defining fields that will be either indexed or queryable.
+                                Indexed fields are added to 'indexes' list below.-->
+                                <property name="fields">
+                                    <map>
+                                        <entry key="vehicleId" value="java.lang.Integer"/>
+                                    </map>
+                                </property>
+
+                                <!-- Defining indexed fields.-->
+                                <property name="indexes">
+                                    <list>
+                                        <!-- Single field (aka. column) index -->
+                                        <bean class="org.apache.ignite.cache.QueryIndex">
+                                            <constructor-arg value="vehicleId"/>
+                                        </bean>
+                                    </list>
+                                </property>
+                            </bean>
+                        </list>
                     </property>
                 </bean>
             </list>

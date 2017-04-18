@@ -16,14 +16,14 @@
  */
 package services.maintenance.common;
 
+import java.io.Serializable;
 import java.util.Date;
 import org.apache.ignite.cache.query.annotations.QuerySqlField;
 
 /**
  * POJO for maintenance records.
  */
-public class Maintenance {
-    @QuerySqlField(index = true)
+public class Maintenance implements Serializable {
     private int vehicleId;
 
     private Date date;
@@ -47,5 +47,12 @@ public class Maintenance {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    @Override public String toString() {
+        return "Maintenance{" +
+            "vehicleId=" + vehicleId +
+            ", date=" + date +
+            '}';
     }
 }

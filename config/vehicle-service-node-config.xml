@@ -30,7 +30,7 @@
 
     <bean class="org.apache.ignite.configuration.IgniteConfiguration">
         <!-- Enabling the peer-class loading feature. -->
-        <property name="setPeerClassLoadingEnabled" value="true"/>
+        <property name="peerClassLoadingEnabled" value="true"/>
 
         <!--
           Labeling Vehicle Service nodes with special attribute. This attribute is checked by

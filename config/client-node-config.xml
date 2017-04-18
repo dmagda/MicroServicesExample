@@ -30,7 +30,7 @@
     <!-- Simple configuration for client applications that connect to the cluster using Ignite client nodes -->
     <bean class="org.apache.ignite.configuration.IgniteConfiguration">
         <!-- Enabling the peer-class loading feature. -->
-        <property name="setPeerClassLoadingEnabled" value="true"/>
+        <property name="peerClassLoadingEnabled" value="true"/>
 
         <property name="discoverySpi">
             <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
