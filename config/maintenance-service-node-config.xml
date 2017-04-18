@@ -58,8 +58,8 @@
                         <bean class="services.maintenance.MaintenanceServiceImpl"/>
                     </property>
 
-                    <!-- Up to 2 instances of the services will be deployed cluster wide. -->
-                    <property name="totalCount" value="2"/>
+                    <!-- Only one instance of the service will be deployed cluster wide. -->
+                    <property name="totalCount" value="1"/>
 
                     <!-- Only one instance of the service can be deployed on a single node. -->
                     <property name="maxPerNodeCount" value="1"/>

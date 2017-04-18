@@ -59,7 +59,10 @@
                     </property>
 
                     <!-- Only one instance of the service will be deployed cluster wide -->
-                    <property name="totalCount" value="1"/>
+                    <property name="totalCount" value="2"/>
+
+                    <!-- Only one instance of the service can be deployed on a single node. -->
+                    <property name="maxPerNodeCount" value="1"/>
 
                     <!--
                       Enabling a special nodes filter for this service. The filter will make sure that the service
