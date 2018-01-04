@@ -48,7 +48,6 @@
                 <!-- Cache for Vehicles' records -->
                 <bean class="org.apache.ignite.configuration.CacheConfiguration">
                     <property name="name" value="vehicles"/>
-                    <property name="memoryMode" value="OFFHEAP_TIERED"/>
 
                     <!--
                       Enabling a special nodes filter for the cache. The filter will make sure that the cache
@@ -63,7 +62,6 @@
                 <!-- Cache for Maintenance records -->
                 <bean class="org.apache.ignite.configuration.CacheConfiguration">
                     <property name="name" value="maintenance"/>
-                    <property name="memoryMode" value="OFFHEAP_TIERED"/>
 
                     <!--
                       Enabling a special nodes filter for the cache. The filter will make sure that the cache
